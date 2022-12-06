@@ -6,11 +6,8 @@ lines = []
 with open('day_4_input.txt', 'r') as input:
     lines = [game.strip() for game in input.readlines()] 
 
-test = [
-        "3-35,2-4"]
-#lines = test
-
 count = 0
+overlaps = 0
 for line in lines:
     # Isolate section numbers
     pairs = line.split(',')
@@ -22,5 +19,10 @@ for line in lines:
         or (s3 >= s1 and s4 <= s2) # Second pair contained in first
         and not (s1 == s3 and s2 == s4)): # Ensure pairs are not equal
             count += 1
+    
+    # Check if pairs overlap
+    if (s1 >= s3 and s1 <= s4) or (s3 >=s1 and s3 <= s2):
+        overlaps += 1
 
 print(f"Total contained pairs: {count}")
+print(f"Overlaps: {overlaps}")
