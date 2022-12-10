@@ -13,8 +13,21 @@ signal_strengths = []
 i = 0
 while i < len(instructions):
     cycle += 1
+
+    pixel_pos = cycle % 40 - 1 # Position on line to draw pixel
+
+    if pixel_pos == 0: # New CRT line
+        print()
+
+    # Check what pixel should be drawn
+    if X in [pixel_pos + n for n in range(-1, 2)]: # Lit
+        print("#", end='')
+    else: # Dark
+        print('.', end='')
+
     if cycle in [20, 60, 100, 140, 180, 220]:
         signal_strengths.append(X * cycle)
+
     if add_neXt == 0: # No value to be added this cycle
         step = instructions[i]
         if step != 'noop':
@@ -27,6 +40,6 @@ while i < len(instructions):
         add_neXt = 0
         i += 1 # Proceed to next instruction
 
-print(signal_strengths)
+print()
 print(f"Sum of signal strengths: {sum(signal_strengths)}")
     
