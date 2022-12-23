@@ -11,6 +11,7 @@ map = [list(l) for l in map]
 graph = {}
 start = ''
 end = ''
+a_list = []
 
 row_len = len(map[0])
 
@@ -18,16 +19,14 @@ row_len = len(map[0])
 for i in range(0, len(map)):
     for j in range(0, row_len):
         loc = f'{i}, {j}'
-        graph[loc] = []
         cur_num = ord(map[i][j]) # Current height as int
-
         if map[i][j] == 'S': # Start position
             start = loc
-            cur_num = ord('a') - 1
+            cur_num = ord('a')
             map[i][j] = chr(cur_num)
         if map[i][j] == 'E': # End position
             end = loc
-            cur_num = ord('z') + 1
+            cur_num = ord('z')
             map[i][j] = chr(cur_num)
 
 for i in range(0, len(map)):
@@ -37,18 +36,23 @@ for i in range(0, len(map)):
         cur_num = ord(map[i][j]) # Current height as int
 
         # Check left
-        if (j > 0) and (ord(map[i][j - 1]) - cur_num <= 1):
+        if (j > 0) and (ord(map[i][j - 1]) - cur_num >= -1):
             graph[loc].append(f'{i}, {j - 1}')
         # Check right
-        if (j < (row_len - 1)) and (ord(map[i][j + 1]) - cur_num <= 1):
+        if (j < (row_len - 1)) and (ord(map[i][j + 1]) - cur_num >= -1):
             graph[loc].append(f'{i}, {j + 1}')
         # Check above
-        if (i > 0) and (ord(map[i - 1][j]) - cur_num <= 1):
+        if (i > 0) and (ord(map[i - 1][j]) - cur_num >= -1):
             graph[loc].append(f'{i - 1}, {j}')
         # Check below
-        if (i < (len(map) - 1)) and (ord(map[i + 1][j]) - cur_num <= 1):
+        if (i < (len(map) - 1)) and (ord(map[i + 1][j]) - cur_num >= -1):
             graph[loc].append(f'{i + 1}, {j}')
 
+        # Save all 'a' coordinates for part two
+        if map[i][j] == 'a':
+            a_list.append(loc)
+
+# Breadth first search on graph
 def BFS(start):
     queue = []
     visited = []
@@ -65,17 +69,16 @@ def BFS(start):
                 distances[neighbor] = distances[current] + 1
     return distances
 
-distances = BFS(start)
+distances = BFS(end)
+print(f"Shortest distance to end: {distances[start]}")
 
-# Print map of accessible locations
-for i in range(0, len(map)):
-    print()
-    for j in range(0, row_len):
-        loc = f'{i}, {j}'
-        if loc in distances.keys():
-            print(map[i][j], end='')
-        else:
-            print('.', end='')
+# -- Part Two -- 
+# To make part two simpler, instead of finding a path start to finish,
+# a path was found from finish to start.
+# This results in the smallest 'a' value in distances being the answer
+min_a = distances[start]
+for pos in a_list:
+    if pos in distances.keys() and distances[pos] < min_a:
+        min_a = distances[pos]
 
-print('\n')
-print(f"Shortest distance to end: {distances[end]}")
+print(f"Shortest distance to end from any elevation a: {min_a}")
